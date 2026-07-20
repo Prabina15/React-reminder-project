@@ -1,18 +1,39 @@
-import React from 'react'
-import ReminderCard from '../components/ReminderCard'
+import React from "react";
+import ReminderCard from "../components/ReminderCard";
+import useReminderStore from "../stores/reminderStore";
+import {format, isAfter} from "date-fns";
 
 const Homepage = () => {
-  return (
-    <div className= "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <ReminderCard/>
-      <ReminderCard/>
-      <ReminderCard/>
-      <ReminderCard/>
-      <ReminderCard/>
-      <ReminderCard/>
-      <ReminderCard/>
-    </div>
-  )
-}
+  const reminders = useReminderStore((state) => state.getAllReminders());
+  
+  const {deleteReminder} = useReminderStore();
+ 
 
-export default Homepage
+ if(reminders.length===0){
+    return  
+      <h3 className="text-center font-medium ">No reminders.</h3>
+  }
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      {reminders.map((reminder) => (
+        <ReminderCard
+         key={reminder.id}
+          id={reminder.id}
+          title={reminder.title}
+          description={reminder.description}
+          date={format(reminder.datetime, "MMM dd, yyyy")}
+          time={format(reminder.datetime, "hh:mm a")}
+          status={reminder.status}
+          isUpcoming={isAfter(reminder.datetime, new Date())}
+          onDeleteReminder={()=>{
+            if(window.confirm("Are you sure?")){
+             deleteReminder(reminder.id);
+            }
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default Homepage;

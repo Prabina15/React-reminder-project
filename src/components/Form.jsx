@@ -1,8 +1,35 @@
-import React from "react";
+import {useForm} from "react-hook-form";
+import { data } from "react-router-dom";
+import useReminderStore from "../stores/reminderStore";
 
-const Form = () => {
+const Form = ({isEditing = false, reminder}) => {
+  const addReminder = useReminderStore((state)=> state.addReminder)
+  const updateReminder = useReminderStore((state)=> state.updateReminder)
+  const {register, handleSubmit, reset} = useForm({
+    values : reminder,
+  });
+
+  const submitForm =(data)=>{
+    if(isEditing){
+       updateReminder(reminder.id, data);
+
+         alert("Reminder updated successfully.")
+
+    }else{
+       addReminder({
+      id:Date.now(),
+      ...data,
+
+    }),
+      reset();
+        alert("Reminder added successfully.")
+    }
+
+    }
+
+  
   return (
-    <form action="#">
+    <form onSubmit={handleSubmit(submitForm)}>
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
         <div className="sm:col-span-2">
           <label
@@ -18,39 +45,46 @@ const Form = () => {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
             placeholder="Add reminder title"
             required
+            {...register("title")}
           />
         </div>
-        <div className="w-full">
+        <div className="sm:col-span-2">
           <label
-            htmlFor="date"
+            htmlFor="dateTime"
             className="block mb-2 text-sm font-mediumdark:text-white"
           >
             Date
           </label>
           <input
-            type="date"
-            name="date"
-            id="date"
+            type="datetime-local"
+            id="datetime"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-            placeholder="Reminder date"
+            placeholder="Reminder date & time"
             required=""
+            {...register("datetime")}
           />
         </div>
-        <div className="w-full">
+        <div className="sm:col-span-2">
           <label
-            htmlFor="time"
+            htmlFor="status"
             className="block mb-2 text-sm font-mediumdark:text-white"
           >
-            Time
+            Status
           </label>
-          <input
-            type="time"
-            name="time"
-            id="time"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-            placeholder="Reminder time"
-            required=""
-          />
+          <select {...register("status")}
+          id="status"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 disabled:text-gray-400"
+            placeholder="Status"
+            defaultValue="Pending"
+            disabled ={!isEditing}
+            required>
+
+              <option value="PENDING">Pending</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+
+            </select>
+         
         </div>
     
         <div className="sm:col-span-2">
@@ -63,18 +97,19 @@ const Form = () => {
           <textarea
             id="description"
             rows="8"
-            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500"
             placeholder="Your description here"
             required
+            {...register("description")}
           ></textarea>
         </div>
       </div>
       <button
         type="submit"
-        className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-orange-500 rounded-lg focus:ring-4 focus:ring-primary-200  "
+        className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-orange-500 rounded-lg focus:ring-4 focus:ring-primary-200 curson-ponter hover:opacity-90 "
         
       >
-        Add reminder
+      {isEditing ? "Update Reminder" :"Add Reminder"}
       </button>
     </form>
   );
