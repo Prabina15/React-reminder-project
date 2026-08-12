@@ -1,9 +1,9 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
-import Homepage from './pages/Homepage'
+import Homepage from './pages/HomePage'
 import UpcomingPage from './pages/UpcomingPage'
 import AddPage from './pages/AddPage'
-import Editpage from './pages/Editpage'
+import Editpage from './pages/EditPage'
 import MainLayout from './layouts/MainLayout'
 
 const Router = () => {
